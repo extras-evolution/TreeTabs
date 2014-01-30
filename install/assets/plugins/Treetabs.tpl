@@ -5,7 +5,7 @@
  * Закладки к дереву ресурсов
  *
  * @category 	plugin
- * @version 	1.1
+ * @version 	1.05
  * @license 	http://www.gnu.org/copyleft/gpl.html GNU Public License (GPL)
  * @internal    @properties &setting_tabs=ID ресурсов для закладок (1,2,3,4);text; &setting_tabs_spec_id=ID спец закладки;text; &setting_tabs_spec_chunk=Чанк настройки;text;TreeTabs &width=ширина блока закладок;text;400 &name_main=Титл первой закладки;text;Главная &show_parent=показывать родителя<br/> (1 - да/0 - нет);text;0
  * @internal	@events OnManagerPageInit
@@ -139,7 +139,7 @@ $script .= <<< EOF
 function str_replace(search, replace, subject) {return subject.split(search).join(replace);}
 
     function create_new(){
-     $$('h2.selected').each(function(el){idname=str_replace('node','',el.id);});  
+     $$('h2.selected').each(function(el){idname=str_replace('tab','',el.id);});  
         if (idname=='0') {top.main.document.location.href='index.php?a=4';  }
         else {
         if (idname=='{$setting_tabs_spec_id}') {top.main.document.location.href='index.php?a=4&pid='+idname;  }
@@ -156,28 +156,26 @@ $script .= <<< EOF
 function changeTree(tree,el) { 
 	$$('.tab').removeClass('selected');
 	$$(el).addClass('selected');
-	$$('h2.selected').each(function(el){idname=str_replace('node','',el.id); });
-	 
+	$$('h2.selected').each(function(el){idname=str_replace('tab','',el.id);});
     indent=(idname=='0')?1:2;
     restoreTree(tree);
 }
-	
+
 function hide_node(){
 	idname='';
-	$$('h2.selected').each(function(el){idname='node'+str_replace('node','',el.id);});
+	$$('h2.selected').each(function(el){idname='node'+str_replace('tab','',el.id);});
 	if (idname=='node0'){
 		$$('h2.tab').each(function(el){
-			if (el.id=='node0') return;
-			$$('#treeRoot #'+el.id).setStyle('display','none'); 
+			idn='node'+str_replace('tab','',el.id);
+			if (idn!='node0') { $(idn).setStyle('display','none');}
 		});
 	} 
 }
-	
 EOF;
 
 $s_restore_tree = "
     function restoreTree(tree) {
-      $$('h2.selected').each(function(el){idname=str_replace('node','',el.id);});
+      $$('h2.selected').each(function(el){idname=str_replace('tab','',el.id);});
   	  indent=(idname=='0') ?1:2;
       rpcNode = $('treeRoot');
       new Ajax('index.php?a=1&f=nodes&indent='+indent+'&parent='+idname+'&expandAll=2&tree='+tree, {method: 'get',onComplete:rpcLoadData}).request();
@@ -201,11 +199,11 @@ function changeTree(tree,el) {
 
 function hide_node(){
 	idname='';
-	$$('h2.selected').each(function(el){idname=str_replace('node','',el.id);});
+	$$('h2.selected').each(function(el){idname=str_replace('tab','',el.id);});
 	if (idname=='0'){
 		$$('h2.tab').each(function(el){
-			if (el.id=='node0') return;
-			$$('#treeRoot #'+el.id).setStyle('display','none'); 
+			idn='node'+str_replace('tab','',el.id);
+			if (idn!='node0') { $(idn).setStyle('display','none');}
 		});
 
 	} else {
@@ -231,12 +229,11 @@ $tabs_s= '<div class="dynamic-tab-pane-control tab-pane"><div class="tab-row" st
 $tab_ID=explode(',',$setting_tabs);
     foreach($tab_ID as $key=>$value){
         $doc = $modx->getDocument($value, '*', 1);
-        $tabs_c.='<h2 style="padding:3px" id="node'.$doc['id'].'" class="tab '.($_SESSION['mrgShowTree']==$doc['id']?'selected':'').'" onclick="changeTree('.$doc['id'].',this);" 
-					oncontextmenu="showPopup('.$doc['id'].',\''.$doc['pagetitle'].'\',event);return false;">
+        $tabs_c.='<h2 style="padding:3px" id="tab'.$doc['id'].'" class="tab '.($_SESSION['mrgShowTree']==$doc['id']?'selected':'').'" onclick="changeTree('.$doc['id'].',this);">
 					<span>'.$doc['pagetitle'].'</span>
 					</h2>';
     }
-$tabs_f='<h2 style="padding:3px" id="node0" class="tab '.($_SESSION['mrgShowTree']=='0'?'selected':'').'" onclick="changeTree(0,this);"><span>'.$name_main.'</span></h2>';
+$tabs_f='<h2 style="padding:3px" id="tab0" class="tab '.($_SESSION['mrgShowTree']=='0'?'selected':'').'" onclick="changeTree(0,this);"><span>'.$name_main.'</span></h2>';
 
 
 
