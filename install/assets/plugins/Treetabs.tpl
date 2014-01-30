@@ -231,12 +231,14 @@ $tabs_s= '<div class="dynamic-tab-pane-control tab-pane"><div class="tab-row" st
 $tab_ID=explode(',',$setting_tabs);
     foreach($tab_ID as $key=>$value){
         $doc = $modx->getDocument($value, '*', 1);
-        $tabs_c.='<h2 style="padding:3px" id="node'.$doc['id'].'" class="tab '.($_SESSION['mrgShowTree']==$doc['id']?'selected':'').'" onclick="changeTree('.$doc['id'].',this);" 
+        $tabs_c.='<h2 style="padding:3px" id="node'.$doc['id'].'" class="tab '.($_SESSION['mrgShowTree']==$doc['id']?'selected':'').'" 
+		onclick="if (ca==\'move\' && '.(int)$show_parent.'==0) {try {parent.main.setMoveValue('.$doc['id'].', \''.$doc['pagetitle'].'\');} catch (event){}} else {changeTree('.$doc['id'].',this);}"
+		
 					oncontextmenu="showPopup('.$doc['id'].',\''.$doc['pagetitle'].'\',event);return false;">
 					<span>'.$doc['pagetitle'].'</span>
 					</h2>';
     }
-$tabs_f='<h2 style="padding:3px" id="node0" class="tab '.($_SESSION['mrgShowTree']=='0'?'selected':'').'" onclick="changeTree(0,this);"><span>'.$name_main.'</span></h2>';
+$tabs_f='<h2 style="padding:3px" id="node0" class="tab '.($_SESSION['mrgShowTree']=='0'?'selected':'').'" onclick="if (ca==\'move\'  && '.(int)$show_parent.'==0) {try {parent.main.setMoveValue(0, \''.$name_main.'\');} catch (event){}} else {changeTree(0,this);}"><span>'.$name_main.'</span></h2>';
 
 
 
